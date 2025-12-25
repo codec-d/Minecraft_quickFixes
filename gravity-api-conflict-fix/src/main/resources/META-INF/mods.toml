@@ -1,0 +1,38 @@
+# This is a hotfix mod to resolve the Gravity API mixin conflict
+# between Beyond the Abyss and JCraft mods
+
+modLoader = "javafml"
+loaderVersion = "[47,)"
+license = "MIT"
+issueTrackerURL = "https://github.com/codec-d/Minecraft_quickFixes/issues"
+
+[[mods]]
+modId = "gravityfix"
+version = "1.0.0"
+displayName = "Gravity API Conflict Fix"
+description = '''
+A hotfix mod that resolves the @Redirect mixin conflict between
+Beyond the Abyss and JCraft mods.
+
+Both mods include Gravity API which has a PlayerMixin with @Redirect
+on the ItemEntity constructor in Player.drop(). This mod uses a
+MixinConfigPlugin to disable the duplicate mixin and prevent the conflict.
+
+Install this mod alongside Beyond the Abyss and JCraft to allow them
+to work together.
+'''
+authors = "GravityFix"
+
+[[dependencies.gravityfix]]
+modId = "forge"
+mandatory = true
+versionRange = "[47,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.gravityfix]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.20.1,1.21)"
+ordering = "NONE"
+side = "BOTH"

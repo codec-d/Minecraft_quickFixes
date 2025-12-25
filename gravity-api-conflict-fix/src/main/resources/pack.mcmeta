@@ -1,0 +1,6 @@
+{
+    "pack": {
+        "description": "Gravity API Conflict Fix - Resolves mixin conflicts between Beyond the Abyss and JCraft",
+        "pack_format": 15
+    }
+}
