@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'gravity-api-conflict-fix/**'
+      - '.github/workflows/build-gravity-fix.yml'
   pull_request:
     paths:
       - 'gravity-api-conflict-fix/**'
@@ -22,12 +23,18 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
+    - name: Download and setup Gradle 8.1.1
+      run: |
+        wget -q https://services.gradle.org/distributions/gradle-8.1.1-bin.zip
+        unzip -q gradle-8.1.1-bin.zip
+        echo "$PWD/gradle-8.1.1/bin" >> $GITHUB_PATH
+
+    - name: Verify Gradle version
+      run: gradle --version
+
     - name: Build with Gradle
-      uses: gradle/actions/setup-gradle@v3
-      with:
-        gradle-version: 8.1.1
-        build-root-directory: gravity-api-conflict-fix
-        arguments: build
+      working-directory: gravity-api-conflict-fix
+      run: gradle build
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
