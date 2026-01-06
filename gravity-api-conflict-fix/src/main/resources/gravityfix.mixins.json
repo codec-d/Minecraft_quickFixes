@@ -5,7 +5,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "gravityfix.refmap.json",
   "plugin": "com.gravityfix.GravityFixMixinPlugin",
-  "priority": 1,
+  "priority": 0,
   "mixins": [],
   "client": [],
   "server": [],
