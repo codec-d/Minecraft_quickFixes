@@ -6,27 +6,13 @@ loaderVersion = "[47,)"
 license = "MIT"
 issueTrackerURL = "https://github.com/codec-d/Minecraft_quickFixes/issues"
 
-# Main mod entry
 [[mods]]
 modId = "gravityfix"
 version = "1.0.0"
 displayName = "Gravity API Conflict Fix"
 description = '''
-A hotfix mod that resolves the @Redirect mixin conflict between
-Beyond the Abyss and JCraft mods. Also provides a dummy gravityapi
-to satisfy dependency requirements.
-'''
-authors = "GravityFix"
-
-# Dummy gravityapi entry to satisfy Beyond the Abyss dependency
-[[mods]]
-modId = "gravityapi"
-version = "1.0.0"
-displayName = "Gravity API (Dummy)"
-description = '''
-Dummy Gravity API entry provided by GravityFix to satisfy mod dependencies.
-The actual gravity functionality is provided by the embedded versions in
-Beyond the Abyss (SolomonLib) and JCraft.
+A hotfix mod that uses a coremod to transform Player.drop() bytecode,
+preventing @Redirect mixin conflicts between Gravity API and SolomonLib.
 '''
 authors = "GravityFix"
 
@@ -38,20 +24,6 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.gravityfix]]
-modId = "minecraft"
-mandatory = true
-versionRange = "[1.20.1,1.21)"
-ordering = "NONE"
-side = "BOTH"
-
-[[dependencies.gravityapi]]
-modId = "forge"
-mandatory = true
-versionRange = "[47,)"
-ordering = "NONE"
-side = "BOTH"
-
-[[dependencies.gravityapi]]
 modId = "minecraft"
 mandatory = true
 versionRange = "[1.20.1,1.21)"
