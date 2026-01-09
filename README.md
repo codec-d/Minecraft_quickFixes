@@ -23,14 +23,27 @@ This mod provides a **high-priority mixin wrapper** (priority 2000) that loads b
 
 ## Installation
 
-1. Build this mod using `./gradlew build`
-2. Copy the JAR from `build/libs/` to your Minecraft `mods` folder
-3. Keep both `gravityapi` and `solomonlib` in your mods folder (don't remove them)
-4. Launch the game - the conflict will be resolved
+### Option 1: Download Pre-built JAR (Recommended)
 
-## Alternative Solution
+1. Go to the [Actions tab](../../actions) on GitHub
+2. Click on the latest successful build
+3. Download the `gravityfix-mod` artifact
+4. Extract the JAR file from the zip
+5. Copy it to your Minecraft `mods` folder
+6. Keep both `gravityapi` and `solomonlib` in your mods folder (don't remove them)
+7. Launch the game - the conflict will be resolved
 
-If you prefer a cleaner setup, you can simply **remove the old GravityAPI mod** from your mods folder, as its functionality is now fully integrated into SolomonLib.
+### Option 2: Build from Source
+
+1. Clone this repository
+2. Build using `./gradlew build`
+3. Copy the JAR from `build/libs/` to your Minecraft `mods` folder
+4. Keep both `gravityapi` and `solomonlib` in your mods folder (don't remove them)
+5. Launch the game - the conflict will be resolved
+
+## Alternative Solution (Not Recommended if Other Mods Depend on GravityAPI)
+
+If **no other mods** depend on the old GravityAPI, you can simply **remove it** from your mods folder, as its functionality is fully integrated into SolomonLib. However, if other mods have it as a dependency, you **must** use the GravityFix compatibility mod instead.
 
 ## Technical Details
 
