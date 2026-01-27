@@ -8,11 +8,17 @@ public class GravityFixErrorHandler implements IMixinErrorHandler {
 
     @Override
     public ErrorAction onPrepareError(IMixinConfig config, Throwable th, IMixinInfo mixin, ErrorAction action) {
-        // Check if this is the gravityapi PlayerMixin that's failing
-        if (config.getName().equals("gravityapi.mixin.json") &&
-            mixin.getClassName().contains("PlayerMixin")) {
+        String configName = config != null ? config.getName() : "null";
+        String mixinClass = mixin != null ? mixin.getClassName() : "null";
 
+        // Log all errors for debugging
+        GravityFix.LOGGER.info("[GravityFix ErrorHandler] onPrepareError called: config={}, mixin={}, error={}",
+            configName, mixinClass, th.getClass().getSimpleName());
+
+        // Check if this is the gravityapi PlayerMixin that's failing
+        if (configName.contains("gravityapi") && mixinClass.contains("PlayerMixin")) {
             GravityFix.LOGGER.warn("[GravityFix] Suppressing gravityapi PlayerMixin preparation error (expected conflict with SolomonLib)");
+            GravityFix.LOGGER.warn("[GravityFix] Error type: {}", th.getClass().getName());
             GravityFix.LOGGER.warn("[GravityFix] GravityAPI functionality is provided by SolomonLib instead");
 
             // Suppress the error - this is expected behavior
@@ -25,12 +31,17 @@ public class GravityFixErrorHandler implements IMixinErrorHandler {
 
     @Override
     public ErrorAction onApplyError(String targetClassName, Throwable th, IMixinInfo mixin, ErrorAction action) {
-        // Check if this is the gravityapi PlayerMixin failing on Player class
-        if (mixin.getConfig().getName().equals("gravityapi.mixin.json") &&
-            mixin.getClassName().contains("PlayerMixin") &&
-            targetClassName.contains("Player")) {
+        String configName = mixin != null && mixin.getConfig() != null ? mixin.getConfig().getName() : "null";
+        String mixinClass = mixin != null ? mixin.getClassName() : "null";
 
-            GravityFix.LOGGER.warn("[GravityFix] Suppressing gravityapi PlayerMixin application error on {} (expected conflict with SolomonLib)", targetClassName);
+        // Log all errors for debugging
+        GravityFix.LOGGER.info("[GravityFix ErrorHandler] onApplyError called: target={}, config={}, mixin={}, error={}",
+            targetClassName, configName, mixinClass, th.getClass().getSimpleName());
+
+        // Check if this is the gravityapi PlayerMixin failing on Player class
+        if (configName.contains("gravityapi") && mixinClass.contains("PlayerMixin")) {
+            GravityFix.LOGGER.warn("[GravityFix] Suppressing gravityapi PlayerMixin application error on {}", targetClassName);
+            GravityFix.LOGGER.warn("[GravityFix] Error type: {}", th.getClass().getName());
             GravityFix.LOGGER.warn("[GravityFix] GravityAPI functionality is provided by SolomonLib instead");
 
             // Suppress the error - this is expected behavior
