@@ -16,7 +16,7 @@ public class GravityFixMixinPlugin implements IMixinConfigPlugin {
 
         // Register our error handler to suppress gravityapi mixin failures
         try {
-            Mixins.addErrorHandlerClass("com.gravityfix.GravityFixErrorHandler");
+            Mixins.registerErrorHandlerClass("com.gravityfix.GravityFixErrorHandler");
             GravityFix.LOGGER.info("[GravityFix] Registered error handler to suppress gravityapi conflicts");
         } catch (Exception e) {
             GravityFix.LOGGER.error("[GravityFix] Failed to register error handler", e);
