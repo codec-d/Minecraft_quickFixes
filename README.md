@@ -15,11 +15,12 @@ Both mixins try to modify the same `Player.drop()` method with the same priority
 
 ## The Solution
 
-This mod provides a **high-priority mixin wrapper** (priority 2000) that loads before both conflicting mixins:
+This mod provides a **mixin error handler** that suppresses the injection failure:
 
-1. **Prevents the conflict** by being the first to redirect the `ItemEntity` creation
-2. **Delegates to SolomonLib** for gravity handling (the newer, maintained implementation)
-3. **Blocks the old gravityapi** mixin from applying
+1. **Allows SolomonLib** to apply its gravity redirect normally
+2. **Suppresses the error** when GravityAPI's mixin fails (blocked by SolomonLib)
+3. **No redirects added** - SolomonLib's gravity system works as intended
+4. **Game continues** without crashing
 
 ## Installation
 
@@ -49,8 +50,10 @@ If **no other mods** depend on the old GravityAPI, you can simply **remove it** 
 
 - **Minecraft Version:** 1.20.1
 - **Forge Version:** 47.4.13
-- **Mixin Priority:** 2000 (higher than both gravityapi and solomonlib at 1001)
+- **Approach:** Mixin error handler suppresses gravityapi injection failures
 - **Load Order:** AFTER gravityapi and solomonlib
+- **No mixins:** This mod doesn't add any redirects or injections
+- **Result:** SolomonLib's gravity system functions normally
 
 ## References
 

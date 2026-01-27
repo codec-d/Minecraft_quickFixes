@@ -11,7 +11,8 @@ public class GravityFix {
 
     public GravityFix() {
         LOGGER.info("[GravityFix] Initializing compatibility mod");
-        LOGGER.info("[GravityFix] This mod disables conflicting mixins from deprecated GravityAPI");
+        LOGGER.info("[GravityFix] This mod suppresses errors from deprecated GravityAPI mixin conflicts");
         LOGGER.info("[GravityFix] SolomonLib's gravity implementation will be used instead");
+        LOGGER.info("[GravityFix] No redirects added - SolomonLib handles gravity normally");
     }
 }
