@@ -56,7 +56,7 @@ If **no other mods** depend on the old GravityAPI, you can simply **remove it** 
 - **Forge Version:** 47.4.13
 - **Dependencies:** Requires Radium (usually already present in modpacks)
 - **Approach:** Automatically configures Radium to disable gravityapi's conflicting mixin
-- **Configuration:** Creates/updates `config/radium.properties` with `mixin.gravity=false`
+- **Configuration:** Attempts specific overrides: `mixin.gravity.PlayerMixin=false` and `gravityapi.mixin.json:PlayerMixin=false`
 - **Load Order:** AFTER gravityapi and solomonlib
 - **No mixins:** This mod doesn't add any redirects or injections
 - **Result:** SolomonLib's gravity system functions normally, gravityapi remains installed for dependency purposes
