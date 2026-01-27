@@ -15,12 +15,12 @@ Both mixins try to modify the same `Player.drop()` method with the same priority
 
 ## The Solution
 
-This mod provides a **mixin error handler** that suppresses the injection failure:
+This mod automatically configures Radium to disable the conflicting mixin:
 
-1. **Allows SolomonLib** to apply its gravity redirect normally
-2. **Suppresses the error** when GravityAPI's mixin fails (blocked by SolomonLib)
-3. **No redirects added** - SolomonLib's gravity system works as intended
-4. **Game continues** without crashing
+1. **Disables GravityAPI's PlayerMixin** via Radium configuration
+2. **Allows SolomonLib** to handle gravity functionality normally
+3. **Automatic setup** - creates/updates `config/radium.properties`
+4. **Requires one restart** - configuration takes effect after relaunch
 
 ## Installation
 
@@ -32,7 +32,10 @@ This mod provides a **mixin error handler** that suppresses the injection failur
 4. Extract the JAR file from the zip
 5. Copy it to your Minecraft `mods` folder
 6. Keep both `gravityapi` and `solomonlib` in your mods folder (don't remove them)
-7. Launch the game - the conflict will be resolved
+7. Launch the game - GravityFix will update Radium configuration
+8. **RESTART Minecraft** - the conflict will be resolved after the second launch
+
+**Note:** The first launch will still crash, but GravityFix will create the configuration. The second launch will work!
 
 ### Option 2: Build from Source
 
@@ -40,7 +43,8 @@ This mod provides a **mixin error handler** that suppresses the injection failur
 2. Build using `./gradlew build`
 3. Copy the JAR from `build/libs/` to your Minecraft `mods` folder
 4. Keep both `gravityapi` and `solomonlib` in your mods folder (don't remove them)
-5. Launch the game - the conflict will be resolved
+5. Launch the game - GravityFix will update Radium configuration
+6. **RESTART Minecraft** - the conflict will be resolved after the second launch
 
 ## Alternative Solution (Not Recommended if Other Mods Depend on GravityAPI)
 
@@ -50,10 +54,12 @@ If **no other mods** depend on the old GravityAPI, you can simply **remove it** 
 
 - **Minecraft Version:** 1.20.1
 - **Forge Version:** 47.4.13
-- **Approach:** Mixin error handler suppresses gravityapi injection failures
+- **Dependencies:** Requires Radium (usually already present in modpacks)
+- **Approach:** Automatically configures Radium to disable gravityapi's conflicting mixin
+- **Configuration:** Creates/updates `config/radium.properties` with `mixin.gravity=false`
 - **Load Order:** AFTER gravityapi and solomonlib
 - **No mixins:** This mod doesn't add any redirects or injections
-- **Result:** SolomonLib's gravity system functions normally
+- **Result:** SolomonLib's gravity system functions normally, gravityapi remains installed for dependency purposes
 
 ## References
 
