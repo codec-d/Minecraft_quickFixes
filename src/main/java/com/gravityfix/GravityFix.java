@@ -11,8 +11,8 @@ public class GravityFix {
 
     public GravityFix() {
         LOGGER.info("[GravityFix] Compatibility mod loaded");
-        LOGGER.info("[GravityFix] Used aggressive reflection to modify gravityapi's mixin config");
-        LOGGER.info("[GravityFix] Check earlier logs for '[GravityFix] *** SUCCESSFULLY MODIFIED defaultRequire! ***'");
-        LOGGER.info("[GravityFix] SolomonLib provides gravity functionality, gravityapi conflict prevented");
+        LOGGER.info("[GravityFix] Using ultra high-priority mixin (10000) to preempt both gravityapi and solomonlib");
+        LOGGER.info("[GravityFix] Delegates to solomonlib's gravity handling when available");
+        LOGGER.info("[GravityFix] Both mod's redirects will be skipped - no conflict, no crash");
     }
 }

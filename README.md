@@ -15,15 +15,15 @@ Both mixins try to modify the same `Player.drop()` method with the same priority
 
 ## The Solution
 
-This mod uses **aggressive runtime reflection** to forcefully modify gravityapi's mixin configuration:
+This mod creates an **ultra high-priority redirect** that preempts both conflicting mods:
 
-1. **Mixin Plugin loads early** during the mixin initialization phase
-2. **Uses reflection** to access SpongePowered Mixin's internal configuration system
-3. **Finds gravityapi.mixin.json** and modifies its `defaultRequire` setting from 1 to 0
-4. **Prevents crash** by making gravityapi's redirect non-required
-5. **SolomonLib continues normally** - its redirect works as intended
+1. **Priority 10000** - Way higher than both gravityapi (1001) and solomonlib (1001)
+2. **Applies first** - Our redirect wins, both other redirects get skipped
+3. **Delegates to solomonlib** - Calls solomonlib's gravity handling via reflection
+4. **Falls back gracefully** - Uses vanilla behavior if solomonlib isn't available
+5. **No crash** - Since our redirect applies first, no conflict occurs
 
-This is an aggressive, invasive approach that directly manipulates internal Mixin state.
+This is the "preemptive interception" approach - we solve the problem by winning the priority race.
 
 ## Installation
 
@@ -34,11 +34,11 @@ This is an aggressive, invasive approach that directly manipulates internal Mixi
 3. Download the `gravityfix-mod` artifact
 4. Extract the JAR file from the zip
 5. Copy it to your Minecraft `mods` folder
-6. Keep both `gravityapi` and `solomonlib` in your mods` folder (don't remove them)
-7. Launch the game - GravityFix will modify gravityapi's config during mixin loading
+6. Keep both `gravityapi` and `solomonlib` in your mods folder (don't remove them)
+7. Launch the game - GravityFix's high-priority mixin will preempt the conflict
 8. Game should launch successfully (no restart needed)
 
-**Note:** Check logs for `[GravityFix] *** SUCCESSFULLY MODIFIED defaultRequire! ***` to confirm the fix worked.
+**Note:** Check logs for `[GravityFix] Using ultra high-priority mixin (10000)` to confirm it loaded.
 
 ### Option 2: Build from Source
 
@@ -57,13 +57,13 @@ If **no other mods** depend on the old GravityAPI, you can simply **remove it** 
 
 - **Minecraft Version:** 1.20.1
 - **Forge Version:** 47.4.13
-- **Approach:** Aggressive reflection-based modification of Mixin internals
-- **Technique:** IMixinConfigPlugin that runs during mixin initialization
-- **Target:** Modifies gravityapi's `InjectorOptions.defaultRequire` from 1 to 0
-- **Load Order:** Loads during mixin phase (before mod initialization)
-- **No game mixins:** This mod doesn't inject into Minecraft code
-- **Invasiveness:** HIGH - directly manipulates SpongePowered Mixin's internal state
-- **Result:** gravityapi's redirect becomes non-required, allowing the conflict to be ignored
+- **Approach:** Ultra high-priority mixin redirect
+- **Priority:** 10000 (vs. 1001 for both gravityapi and solomonlib)
+- **Target:** `Player.drop()` method - redirects `new ItemEntity()` call
+- **Delegation:** Calls solomonlib's gravity API via reflection when available
+- **Fallback:** Uses vanilla ItemEntity creation if solomonlib not found
+- **Invasiveness:** MEDIUM - standard mixin technique, just very high priority
+- **Result:** Our redirect applies first, both conflicting redirects get skipped, no crash occurs
 
 ## References
 
