@@ -10,9 +10,9 @@ public class GravityFix {
     public static final Logger LOGGER = LogManager.getLogger();
 
     public GravityFix() {
-        LOGGER.info("[GravityFix] Initializing compatibility mod");
-        LOGGER.info("[GravityFix] Attempting to override gravityapi's mixin configuration");
-        LOGGER.info("[GravityFix] Providing empty gravityapi.mixin.json to prevent conflicts");
-        LOGGER.info("[GravityFix] SolomonLib will provide gravity functionality");
+        LOGGER.info("[GravityFix] Compatibility mod loaded");
+        LOGGER.info("[GravityFix] Used aggressive reflection to modify gravityapi's mixin config");
+        LOGGER.info("[GravityFix] Check earlier logs for '[GravityFix] *** SUCCESSFULLY MODIFIED defaultRequire! ***'");
+        LOGGER.info("[GravityFix] SolomonLib provides gravity functionality, gravityapi conflict prevented");
     }
 }

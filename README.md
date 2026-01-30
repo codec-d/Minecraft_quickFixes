@@ -15,12 +15,15 @@ Both mixins try to modify the same `Player.drop()` method with the same priority
 
 ## The Solution
 
-This mod automatically configures Radium to disable the conflicting mixin:
+This mod uses **aggressive runtime reflection** to forcefully modify gravityapi's mixin configuration:
 
-1. **Disables GravityAPI's PlayerMixin** via Radium configuration
-2. **Allows SolomonLib** to handle gravity functionality normally
-3. **Automatic setup** - creates/updates `config/radium.properties`
-4. **Requires one restart** - configuration takes effect after relaunch
+1. **Mixin Plugin loads early** during the mixin initialization phase
+2. **Uses reflection** to access SpongePowered Mixin's internal configuration system
+3. **Finds gravityapi.mixin.json** and modifies its `defaultRequire` setting from 1 to 0
+4. **Prevents crash** by making gravityapi's redirect non-required
+5. **SolomonLib continues normally** - its redirect works as intended
+
+This is an aggressive, invasive approach that directly manipulates internal Mixin state.
 
 ## Installation
 
@@ -31,11 +34,11 @@ This mod automatically configures Radium to disable the conflicting mixin:
 3. Download the `gravityfix-mod` artifact
 4. Extract the JAR file from the zip
 5. Copy it to your Minecraft `mods` folder
-6. Keep both `gravityapi` and `solomonlib` in your mods folder (don't remove them)
-7. Launch the game - GravityFix will update Radium configuration
-8. **RESTART Minecraft** - the conflict will be resolved after the second launch
+6. Keep both `gravityapi` and `solomonlib` in your mods` folder (don't remove them)
+7. Launch the game - GravityFix will modify gravityapi's config during mixin loading
+8. Game should launch successfully (no restart needed)
 
-**Note:** The first launch will still crash, but GravityFix will create the configuration. The second launch will work!
+**Note:** Check logs for `[GravityFix] *** SUCCESSFULLY MODIFIED defaultRequire! ***` to confirm the fix worked.
 
 ### Option 2: Build from Source
 
@@ -54,11 +57,13 @@ If **no other mods** depend on the old GravityAPI, you can simply **remove it** 
 
 - **Minecraft Version:** 1.20.1
 - **Forge Version:** 47.4.13
-- **Approach:** Provides empty gravityapi.mixin.json override to prevent mixin loading
-- **Load Order:** AFTER gravityapi and solomonlib
-- **No mixins:** This mod doesn't add any redirects or injections
-- **Result:** Attempts to override gravityapi's mixin configuration so SolomonLib can function
-- **Note:** This is an experimental approach - success depends on Forge's mixin loading order
+- **Approach:** Aggressive reflection-based modification of Mixin internals
+- **Technique:** IMixinConfigPlugin that runs during mixin initialization
+- **Target:** Modifies gravityapi's `InjectorOptions.defaultRequire` from 1 to 0
+- **Load Order:** Loads during mixin phase (before mod initialization)
+- **No game mixins:** This mod doesn't inject into Minecraft code
+- **Invasiveness:** HIGH - directly manipulates SpongePowered Mixin's internal state
+- **Result:** gravityapi's redirect becomes non-required, allowing the conflict to be ignored
 
 ## References
 
