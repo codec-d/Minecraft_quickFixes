@@ -24,34 +24,38 @@ public class GravityFixMixinPlugin implements IMixinConfigPlugin {
         try {
             System.out.println("[GravityFix] Accessing Mixin internals via reflection...");
 
-            // Access MixinEnvironment to get all configs
-            Class<?> mixinEnvClass = Class.forName("org.spongepowered.asm.mixin.MixinEnvironment");
-            Method getCurrentEnv = mixinEnvClass.getMethod("getCurrentEnvironment");
-            Object environment = getCurrentEnv.invoke(null);
+            // Try to access the global Mixins class which has the configs
+            Class<?> mixinsClass = Class.forName("org.spongepowered.asm.mixin.Mixins");
+            System.out.println("[GravityFix] Found Mixins class: " + mixinsClass);
 
-            System.out.println("[GravityFix] Got MixinEnvironment: " + environment);
+            // Try to find the configs field - it's likely a static field
+            Field[] fields = mixinsClass.getDeclaredFields();
+            System.out.println("[GravityFix] Scanning " + fields.length + " fields in Mixins class...");
 
-            // Access the configs
-            Method getConfigsMethod = mixinEnvClass.getMethod("getConfigs");
-            Object configsObj = getConfigsMethod.invoke(environment);
+            for (Field field : fields) {
+                field.setAccessible(true);
+                System.out.println("[GravityFix] Field: " + field.getName() + " type: " + field.getType());
 
-            if (configsObj instanceof Set) {
-                Set<?> configs = (Set<?>) configsObj;
-                System.out.println("[GravityFix] Scanning " + configs.size() + " mixin configs...");
+                // Look for a Set or Collection field that might hold configs
+                if (java.util.Set.class.isAssignableFrom(field.getType()) ||
+                    java.util.Collection.class.isAssignableFrom(field.getType())) {
 
-                for (Object config : configs) {
                     try {
-                        Method getNameMethod = config.getClass().getMethod("getName");
-                        String configName = (String) getNameMethod.invoke(config);
+                        Object value = field.get(null); // static field
+                        if (value instanceof Set) {
+                            Set<?> set = (Set<?>) value;
+                            System.out.println("[GravityFix] Found Set field '" + field.getName() + "' with " + set.size() + " items");
 
-                        if (configName != null && configName.contains("gravityapi")) {
-                            System.out.println("[GravityFix] *** FOUND TARGET: " + configName + " ***");
-
-                            // Modify the injector configs
-                            modifyInjectorConfig(config);
+                            // Check if it contains MixinConfig objects
+                            for (Object item : set) {
+                                if (item != null && item.getClass().getName().contains("MixinConfig")) {
+                                    System.out.println("[GravityFix] Found MixinConfig in field '" + field.getName() + "'");
+                                    scanAndModifyConfig(item);
+                                }
+                            }
                         }
                     } catch (Exception e) {
-                        // Continue to next config
+                        // Try next field
                     }
                 }
             }
@@ -62,33 +66,28 @@ public class GravityFixMixinPlugin implements IMixinConfigPlugin {
         }
     }
 
-    private void modifyInjectorConfig(Object config) {
+    private void scanAndModifyConfig(Object config) {
         try {
-            // Try to access and modify the injector config
-            Class<?> configClass = config.getClass();
+            Method getNameMethod = config.getClass().getMethod("getName");
+            String configName = (String) getNameMethod.invoke(config);
 
-            // Try multiple possible field names for the injector options
-            String[] possibleFields = {"injectorOptions", "injectors", "defaultRequire"};
+            System.out.println("[GravityFix] Checking config: " + configName);
 
-            for (String fieldName : possibleFields) {
-                try {
-                    Field field = configClass.getDeclaredField(fieldName);
-                    field.setAccessible(true);
-                    Object value = field.get(config);
-                    System.out.println("[GravityFix] Found field '" + fieldName + "': " + value);
-
-                    if (fieldName.equals("defaultRequire") && value instanceof Integer) {
-                        System.out.println("[GravityFix] Changing defaultRequire from " + value + " to 0");
-                        field.setInt(config, 0);
-                        System.out.println("[GravityFix] *** SUCCESSFULLY MODIFIED defaultRequire! ***");
-                    }
-
-                } catch (NoSuchFieldException e) {
-                    // Try next field
-                }
+            if (configName != null && configName.contains("gravityapi")) {
+                System.out.println("[GravityFix] *** FOUND TARGET: " + configName + " ***");
+                modifyInjectorConfig(config);
             }
 
-            // Also try to access via the Config object's methods
+        } catch (Exception e) {
+            // Ignore
+        }
+    }
+
+    private void modifyInjectorConfig(Object config) {
+        try {
+            Class<?> configClass = config.getClass();
+
+            // Try to access the injector options
             try {
                 Method getInjectorOptions = configClass.getMethod("getInjectorOptions");
                 Object injectorOptions = getInjectorOptions.invoke(config);
@@ -103,7 +102,27 @@ public class GravityFixMixinPlugin implements IMixinConfigPlugin {
                     System.out.println("[GravityFix] *** MODIFIED InjectorOptions.defaultRequire from " + oldValue + " to 0 ***");
                 }
             } catch (Exception e) {
-                // Not available
+                System.err.println("[GravityFix] Failed to get injector options:");
+                e.printStackTrace();
+            }
+
+            // Also try direct field access
+            try {
+                Field injectorOptionsField = configClass.getDeclaredField("injectorOptions");
+                injectorOptionsField.setAccessible(true);
+                Object injectorOptions = injectorOptionsField.get(config);
+
+                if (injectorOptions != null) {
+                    Class<?> optionsClass = injectorOptions.getClass();
+                    Field defaultRequireField = optionsClass.getDeclaredField("defaultRequire");
+                    defaultRequireField.setAccessible(true);
+                    int oldValue = defaultRequireField.getInt(injectorOptions);
+                    defaultRequireField.setInt(injectorOptions, 0);
+                    System.out.println("[GravityFix] *** SUCCESSFULLY MODIFIED defaultRequire from " + oldValue + " to 0! ***");
+                }
+            } catch (Exception e) {
+                System.err.println("[GravityFix] Failed direct field access:");
+                e.printStackTrace();
             }
 
         } catch (Exception e) {
